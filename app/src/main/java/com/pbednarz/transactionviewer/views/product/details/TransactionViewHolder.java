@@ -9,7 +9,6 @@ import com.pbednarz.transactionviewer.R;
 import com.pbednarz.transactionviewer.models.Transaction;
 import com.pbednarz.transactionviewer.providers.exchange.CurrencyConverter;
 import com.pbednarz.transactionviewer.providers.exchange.CurrencyFormatter;
-import com.pbednarz.transactionviewer.providers.exchange.ExchangeRateUndefinedException;
 
 import java.math.BigDecimal;
 
@@ -44,7 +43,7 @@ public class TransactionViewHolder extends RecyclerView.ViewHolder {
         try {
             String gbpTransactionAmount = currencyConverter.convertCurrency(transactionAmount, transactionCurrency).toPlainString();
             transactionGBPAmountTv.setText(CurrencyFormatter.format(gbpTransactionAmount, CurrencyFormatter.GBP_CURRENCY));
-        } catch (ExchangeRateUndefinedException e) {
+        } catch (Exception e) {
             transactionGBPAmountTv.setText(String.format(exchangeErrorFormatter, transactionCurrency));
             Timber.e(e, "convertCurrency error");
         }

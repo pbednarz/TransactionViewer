@@ -19,7 +19,6 @@ import com.pbednarz.transactionviewer.models.Product;
 import com.pbednarz.transactionviewer.models.Transaction;
 import com.pbednarz.transactionviewer.providers.exchange.CurrencyConverter;
 import com.pbednarz.transactionviewer.providers.exchange.CurrencyFormatter;
-import com.pbednarz.transactionviewer.providers.exchange.ExchangeRateUndefinedException;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -72,7 +71,7 @@ public class ProductDetailsActivity extends AppCompatActivity {
         for (Transaction transaction : transactions) {
             try {
                 total = total.add(currencyConverter.convertCurrency(transaction.getAmount(), transaction.getCurrency()));
-            } catch (ExchangeRateUndefinedException e) {
+            } catch (Exception e) {
                 Timber.e(e, "calculateTotalAmount Error");
             }
         }
