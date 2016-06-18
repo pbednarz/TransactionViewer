@@ -3,6 +3,7 @@ package com.pbednarz.transactionviewer.providers;
 import android.app.Application;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import com.pbednarz.transactionviewer.R;
 import com.pbednarz.transactionviewer.models.Product;
@@ -11,8 +12,10 @@ import com.pbednarz.transactionviewer.models.Transaction;
 import com.pbednarz.transactionviewer.providers.exchange.CurrencyConverter;
 import com.pbednarz.transactionviewer.providers.exchange.CurrencyConverterGraph;
 import com.pbednarz.transactionviewer.providers.exchange.GBPCurrencyConverter;
+import com.pbednarz.transactionviewer.providers.json.JSONResourceReader;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +24,7 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import timber.log.Timber;
 
 /**
  * Created by pbednarz on 2016-06-18.
@@ -58,14 +62,26 @@ public class DataModule {
 
     @Provides
     public List<Rate> provideRates(JSONResourceReader jsonReader) {
-        return jsonReader.readFromRaw(R.raw.rates, new TypeToken<ArrayList<Rate>>() {
-        }.getType());
+        try {
+            return jsonReader.readFromRaw(R.raw.rates, new TypeToken<ArrayList<Rate>>() {
+            }.getType());
+        } catch (JsonSyntaxException e) {
+            // TODO: should eliminate only wrong entry (custom adapter needed)?
+            Timber.e(e, "Error while parsing list of rates");
+            return Collections.emptyList();
+        }
     }
 
     @Provides
     public List<Transaction> provideTransactions(JSONResourceReader jsonReader) {
-        return jsonReader.readFromRaw(R.raw.transactions, new TypeToken<ArrayList<Transaction>>() {
-        }.getType());
+        try {
+            return jsonReader.readFromRaw(R.raw.transactions, new TypeToken<ArrayList<Transaction>>() {
+            }.getType());
+        } catch (JsonSyntaxException e) {
+            // TODO: should eliminate only wrong entry (custom adapter needed)?
+            Timber.e(e, "Error while parsing list of transaction");
+            return Collections.emptyList();
+        }
     }
 
     @Provides

@@ -1,10 +1,11 @@
-package com.pbednarz.transactionviewer.providers;
+package com.pbednarz.transactionviewer.providers.json;
 
 import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.annotation.RawRes;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -29,7 +30,7 @@ public class JSONResourceReader {
         this.resources = resources;
     }
 
-    public <T> T readFromRaw(@RawRes int id, Type type) {
+    public <T> T readFromRaw(@RawRes int id, Type type) throws JsonSyntaxException {
         InputStream resourceReader = resources.openRawResource(id);
         Writer writer = new StringWriter();
         try {
