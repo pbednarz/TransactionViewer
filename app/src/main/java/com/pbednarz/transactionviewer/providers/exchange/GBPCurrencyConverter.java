@@ -15,15 +15,14 @@ import java.util.Map;
 
 public class GBPCurrencyConverter implements CurrencyConverter {
     private final String GBP_CURRENCY = "GBP";
-    private final Map<String, BigDecimal> gbpRates;
     private final CurrencyConverterGraph currencyConverterGraph;
+    private final Map<String, BigDecimal> ratesCache = new HashMap<>();
 
     public GBPCurrencyConverter(@NonNull List<Rate> rates, @NonNull CurrencyConverterGraph currencyConverterGraph) {
-        this.gbpRates = new HashMap<>();
         this.currencyConverterGraph = currencyConverterGraph;
         for (Rate rate : rates) {
             if (GBP_CURRENCY.equals(rate.getTo())) {
-                gbpRates.put(rate.getFrom(), rate.getRate());
+                ratesCache.put(rate.getFrom(), rate.getRate());
             }
         }
         for (Rate rate : rates) {
@@ -37,22 +36,18 @@ public class GBPCurrencyConverter implements CurrencyConverter {
             return inValue;
         }
 
-        BigDecimal gbp_currency_rate = getKnownRate(currencyFrom);
-        if (gbp_currency_rate != null) {
-            BigDecimal gbp = inValue.multiply(gbp_currency_rate);
-            gbp = gbp.setScale(2, BigDecimal.ROUND_HALF_UP);
-            return gbp;
-        }
-
-        return currencyConverterGraph.convertCurrency(currencyFrom, GBP_CURRENCY, inValue);
+        BigDecimal rate = getRate(currencyFrom);
+        BigDecimal gbp = inValue.multiply(rate);
+        gbp = gbp.setScale(2, BigDecimal.ROUND_HALF_UP);
+        return gbp;
     }
 
-    public BigDecimal getKnownRate(@NonNull String currencyFrom) {
-        BigDecimal gbpRate = gbpRates.get(currencyFrom);
-        if (gbpRate != null) {
-            return gbpRate;
+    private BigDecimal getRate(@NonNull String currencyFrom) throws ExchangeRateUndefinedException {
+        BigDecimal rate = ratesCache.get(currencyFrom);
+        if (rate == null) {
+            rate = currencyConverterGraph.getCurrencyRate(currencyFrom, GBP_CURRENCY);
+            ratesCache.put(currencyFrom, rate);
         }
-
-        return null;
+        return rate;
     }
 }

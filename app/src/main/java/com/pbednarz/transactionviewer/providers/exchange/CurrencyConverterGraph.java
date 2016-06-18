@@ -81,11 +81,10 @@ public class CurrencyConverterGraph {
      *
      * @param origin the string identifier of the currency to be exchanged
      * @param goal   the string identifier of the target currency
-     * @param amount the amount of the origin currency to be exchanged
      * @return the amount of converted currency
      * @throws ExchangeRateUndefinedException
      */
-    public BigDecimal convertCurrency(String origin, String goal, BigDecimal amount) throws ExchangeRateUndefinedException {
+    public BigDecimal getCurrencyRate(String origin, String goal) throws ExchangeRateUndefinedException {
         // find the shortest path between the two currencies
         List<Rate> l = DijkstraShortestPath.findPathBetween(currencyGraph, origin, goal);
 
@@ -101,7 +100,7 @@ public class CurrencyConverterGraph {
         }
 
         // compute and return the currency value
-        return amount.multiply(rate);
+        return rate;
     }
 
     /**
