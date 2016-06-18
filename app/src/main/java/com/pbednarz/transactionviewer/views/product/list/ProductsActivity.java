@@ -19,11 +19,8 @@ import butterknife.ButterKnife;
 
 public class ProductsActivity extends AppCompatActivity implements ProductsAdapter.ProductActionInterface {
 
-    @BindView(R.id.recyclerView)
-    RecyclerView recyclerView;
-
-    @Inject
-    List<Product> products;
+    @BindView(R.id.recyclerView) RecyclerView recyclerView;
+    @Inject List<Product> products;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

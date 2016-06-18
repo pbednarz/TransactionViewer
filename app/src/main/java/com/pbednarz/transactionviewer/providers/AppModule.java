@@ -11,6 +11,9 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 
+/**
+ * Created by pbednarz on 2016-06-18.
+ */
 @Module(includes = {DataModule.class})
 public class AppModule {
 

@@ -17,10 +17,10 @@ import timber.log.Timber;
 
 /**
  * An object for reading from a JSON resource file and constructing an object from that resource file using Gson.
+ * Created by pbednarz on 2016-06-18.
  */
 public class JSONResourceReader {
 
-    private static final String LOGTAG = JSONResourceReader.class.getSimpleName();
     private final Gson gson;
     private final Resources resources;
 

@@ -1,5 +1,7 @@
 package com.pbednarz.transactionviewer.providers.exchange;
 
+import android.support.annotation.NonNull;
+
 import com.pbednarz.transactionviewer.models.Rate;
 
 import java.math.BigDecimal;
@@ -16,7 +18,7 @@ public class GBPCurrencyConverter implements CurrencyConverter {
     private final Map<String, BigDecimal> gbpRates;
     private final CurrencyConverterGraph currencyConverterGraph;
 
-    public GBPCurrencyConverter(List<Rate> rates, CurrencyConverterGraph currencyConverterGraph) {
+    public GBPCurrencyConverter(@NonNull List<Rate> rates, @NonNull CurrencyConverterGraph currencyConverterGraph) {
         this.gbpRates = new HashMap<>();
         this.currencyConverterGraph = currencyConverterGraph;
         for (Rate rate : rates) {
@@ -30,7 +32,7 @@ public class GBPCurrencyConverter implements CurrencyConverter {
     }
 
     @Override
-    public BigDecimal convertCurrency(BigDecimal inValue, String currencyFrom) throws ArithmeticException, ExchangeRateUndefinedException {
+    public BigDecimal convertCurrency(@NonNull BigDecimal inValue, @NonNull String currencyFrom) throws ArithmeticException, ExchangeRateUndefinedException {
         if (GBP_CURRENCY.equals(currencyFrom)) {
             return inValue;
         }
@@ -45,7 +47,7 @@ public class GBPCurrencyConverter implements CurrencyConverter {
         return currencyConverterGraph.convertCurrency(currencyFrom, GBP_CURRENCY, inValue);
     }
 
-    public BigDecimal getKnownRate(String currencyFrom) {
+    public BigDecimal getKnownRate(@NonNull String currencyFrom) {
         BigDecimal gbpRate = gbpRates.get(currencyFrom);
         if (gbpRate != null) {
             return gbpRate;

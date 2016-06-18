@@ -47,6 +47,5 @@ public class TransactionViewHolder extends RecyclerView.ViewHolder {
             transactionGBPAmountTv.setText(String.format(exchangeErrorFormatter, transactionCurrency));
             Timber.e(e, "convertCurrency error");
         }
-
     }
 }
