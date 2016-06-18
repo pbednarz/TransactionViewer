@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">TransactionViewer</string>
+
+    <plurals name="transactions_formatter">
+        <item quantity="one">%1$d transaction</item>
+        <item quantity="other">%1$d transactions</item>
+    </plurals>
 </resources>
