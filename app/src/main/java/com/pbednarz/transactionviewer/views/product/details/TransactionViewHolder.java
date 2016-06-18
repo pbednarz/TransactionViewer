@@ -39,10 +39,10 @@ public class TransactionViewHolder extends RecyclerView.ViewHolder {
     public void bindTransaction(@NonNull Transaction transaction) {
         BigDecimal transactionAmount = transaction.getAmount();
         String transactionCurrency = transaction.getCurrency();
-        transactionCurrencyAmountTv.setText(CurrencyFormatter.format(transactionAmount.toPlainString(), transactionCurrency));
+        transactionCurrencyAmountTv.setText(CurrencyFormatter.format(transactionAmount, transactionCurrency));
         try {
-            String gbpTransactionAmount = currencyConverter.convertCurrency(transactionAmount, transactionCurrency).toPlainString();
-            transactionGBPAmountTv.setText(CurrencyFormatter.format(gbpTransactionAmount, CurrencyFormatter.GBP_CURRENCY));
+            BigDecimal gbpTransactionAmount = currencyConverter.convertCurrency(transactionAmount, transactionCurrency);
+            transactionGBPAmountTv.setText(CurrencyFormatter.formatUK(gbpTransactionAmount));
         } catch (Exception e) {
             transactionGBPAmountTv.setText(String.format(exchangeErrorFormatter, transactionCurrency));
             Timber.e(e, "convertCurrency error");

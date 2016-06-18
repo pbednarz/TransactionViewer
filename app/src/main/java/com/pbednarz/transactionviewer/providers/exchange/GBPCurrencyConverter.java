@@ -40,7 +40,7 @@ public class GBPCurrencyConverter implements CurrencyConverter {
         BigDecimal gbp_currency_rate = getKnownRate(currencyFrom);
         if (gbp_currency_rate != null) {
             BigDecimal gbp = inValue.multiply(gbp_currency_rate);
-            gbp = gbp.setScale(5, BigDecimal.ROUND_HALF_UP);
+            gbp = gbp.setScale(2, BigDecimal.ROUND_HALF_UP);
             return gbp;
         }
 

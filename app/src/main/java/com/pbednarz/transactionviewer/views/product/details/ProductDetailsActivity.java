@@ -75,7 +75,7 @@ public class ProductDetailsActivity extends AppCompatActivity {
                 Timber.e(e, "calculateTotalAmount Error");
             }
         }
-        String totalStringFormatted = CurrencyFormatter.UK_FORMATTER.format(total);
+        String totalStringFormatted = CurrencyFormatter.formatUK(total);
         totalAmountTv.setText(getString(R.string.total_sum_formatter, totalStringFormatted));
     }
 
