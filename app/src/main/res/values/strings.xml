@@ -7,4 +7,5 @@
     </plurals>
 
     <string name="total_sum_formatter">Total: %1$s</string>
+    <string name="exchange_error_formatter">Exchange rate not defined for %1$s</string>
 </resources>

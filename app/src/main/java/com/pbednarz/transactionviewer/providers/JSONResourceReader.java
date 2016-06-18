@@ -3,7 +3,6 @@ package com.pbednarz.transactionviewer.providers;
 import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.annotation.RawRes;
-import android.util.Log;
 
 import com.google.gson.Gson;
 
@@ -13,6 +12,8 @@ import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.lang.reflect.Type;
+
+import timber.log.Timber;
 
 /**
  * An object for reading from a JSON resource file and constructing an object from that resource file using Gson.
@@ -39,12 +40,12 @@ public class JSONResourceReader {
                 line = reader.readLine();
             }
         } catch (Exception e) {
-            Log.e(LOGTAG, "Unhandled exception while using JSONResourceReader", e);
+            Timber.e(e, "Unhandled exception while using JSONResourceReader");
         } finally {
             try {
                 resourceReader.close();
             } catch (Exception e) {
-                Log.e(LOGTAG, "Unhandled exception while using JSONResourceReader", e);
+                Timber.e(e, "Unhandled exception while using JSONResourceReader");
             }
         }
 

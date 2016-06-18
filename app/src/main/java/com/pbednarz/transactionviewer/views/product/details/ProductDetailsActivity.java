@@ -28,6 +28,7 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import timber.log.Timber;
 
 /**
  * Created by pbednarz on 2016-06-18.
@@ -72,7 +73,7 @@ public class ProductDetailsActivity extends AppCompatActivity {
             try {
                 total = total.add(currencyConverter.convertCurrency(transaction.getAmount(), transaction.getCurrency()));
             } catch (ExchangeRateUndefinedException e) {
-                e.printStackTrace();
+                Timber.e(e, "calculateTotalAmount Error");
             }
         }
         String totalStringFormatted = CurrencyFormatter.UK_FORMATTER.format(total);

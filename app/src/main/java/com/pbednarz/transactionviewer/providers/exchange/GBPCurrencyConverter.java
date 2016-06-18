@@ -16,15 +16,14 @@ public class GBPCurrencyConverter implements CurrencyConverter {
     private final Map<String, BigDecimal> gbpRates;
     private final CurrencyConverterGraph currencyConverterGraph;
 
-    public GBPCurrencyConverter(List<Rate> rates) {
-        gbpRates = new HashMap<>();
+    public GBPCurrencyConverter(List<Rate> rates, CurrencyConverterGraph currencyConverterGraph) {
+        this.gbpRates = new HashMap<>();
+        this.currencyConverterGraph = currencyConverterGraph;
         for (Rate rate : rates) {
             if (GBP_CURRENCY.equals(rate.getTo())) {
                 gbpRates.put(rate.getFrom(), new BigDecimal(rate.getRate()));
             }
         }
-
-        currencyConverterGraph = new CurrencyConverterGraph();
         for (Rate rate : rates) {
             currencyConverterGraph.setExchangeRate(rate.getFrom(), rate.getTo(), new BigDecimal(rate.getRate()));
         }

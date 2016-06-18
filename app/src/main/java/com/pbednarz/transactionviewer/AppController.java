@@ -9,6 +9,8 @@ import com.pbednarz.transactionviewer.providers.AppModule;
 import com.pbednarz.transactionviewer.providers.DaggerAppComponent;
 import com.squareup.leakcanary.LeakCanary;
 
+import timber.log.Timber;
+
 /**
  * Created by pbednarz on 2016-06-18.
  */
@@ -25,6 +27,9 @@ public class AppController extends Application {
         super.onCreate();
         component = buildGraph();
         LeakCanary.install(this);
+        if (BuildConfig.DEBUG) {
+            Timber.plant(new Timber.DebugTree());
+        }
     }
 
     protected AppComponent buildGraph() {
