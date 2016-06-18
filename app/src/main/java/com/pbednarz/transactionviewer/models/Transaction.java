@@ -3,6 +3,8 @@ package com.pbednarz.transactionviewer.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.math.BigDecimal;
+
 import lombok.Value;
 
 /**
@@ -10,7 +12,7 @@ import lombok.Value;
  */
 @Value
 public class Transaction implements Parcelable {
-    public static final Parcelable.Creator<Transaction> CREATOR = new Parcelable.Creator<Transaction>() {
+    public static final Creator<Transaction> CREATOR = new Creator<Transaction>() {
         @Override
         public Transaction createFromParcel(Parcel source) {
             return new Transaction(source);
@@ -21,12 +23,12 @@ public class Transaction implements Parcelable {
             return new Transaction[size];
         }
     };
-    private final String amount;
+    private final BigDecimal amount;
     private final String sku;
     private final String currency;
 
     protected Transaction(Parcel in) {
-        this.amount = in.readString();
+        this.amount = (BigDecimal) in.readSerializable();
         this.sku = in.readString();
         this.currency = in.readString();
     }
@@ -38,7 +40,7 @@ public class Transaction implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.amount);
+        dest.writeSerializable(this.amount);
         dest.writeString(this.sku);
         dest.writeString(this.currency);
     }

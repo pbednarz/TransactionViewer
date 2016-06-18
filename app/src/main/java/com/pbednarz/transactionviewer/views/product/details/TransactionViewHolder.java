@@ -11,6 +11,8 @@ import com.pbednarz.transactionviewer.providers.exchange.CurrencyConverter;
 import com.pbednarz.transactionviewer.providers.exchange.CurrencyFormatter;
 import com.pbednarz.transactionviewer.providers.exchange.ExchangeRateUndefinedException;
 
+import java.math.BigDecimal;
+
 import javax.inject.Inject;
 
 import butterknife.BindString;
@@ -36,9 +38,9 @@ public class TransactionViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void bindTransaction(@NonNull Transaction transaction) {
-        String transactionAmount = transaction.getAmount();
+        BigDecimal transactionAmount = transaction.getAmount();
         String transactionCurrency = transaction.getCurrency();
-        transactionCurrencyAmountTv.setText(CurrencyFormatter.format(transactionAmount, transactionCurrency));
+        transactionCurrencyAmountTv.setText(CurrencyFormatter.format(transactionAmount.toPlainString(), transactionCurrency));
         try {
             String gbpTransactionAmount = currencyConverter.convertCurrency(transactionAmount, transactionCurrency).toPlainString();
             transactionGBPAmountTv.setText(CurrencyFormatter.format(gbpTransactionAmount, CurrencyFormatter.GBP_CURRENCY));

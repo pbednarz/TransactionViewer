@@ -7,7 +7,5 @@ import java.math.BigDecimal;
  */
 
 public interface CurrencyConverter {
-    BigDecimal convertCurrency(String inValue, String currencyFrom) throws ArithmeticException, ExchangeRateUndefinedException;
-
     BigDecimal convertCurrency(BigDecimal inValue, String currencyFrom) throws ArithmeticException, ExchangeRateUndefinedException;
 }

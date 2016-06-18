@@ -30,11 +30,6 @@ public class GBPCurrencyConverter implements CurrencyConverter {
     }
 
     @Override
-    public BigDecimal convertCurrency(String inValue, String currencyFrom) throws ArithmeticException, ExchangeRateUndefinedException {
-        return convertCurrency(new BigDecimal(inValue), currencyFrom);
-    }
-
-    @Override
     public BigDecimal convertCurrency(BigDecimal inValue, String currencyFrom) throws ArithmeticException, ExchangeRateUndefinedException {
         if (GBP_CURRENCY.equals(currencyFrom)) {
             return inValue;
