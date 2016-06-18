@@ -3,7 +3,7 @@ package com.pbednarz.transactionviewer.providers.exchange;
 import com.pbednarz.transactionviewer.models.Rate;
 
 import org.jgrapht.alg.DijkstraShortestPath;
-import org.jgrapht.graph.DirectedMultigraph;
+import org.jgrapht.graph.SimpleDirectedGraph;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -38,13 +38,13 @@ public class CurrencyConverterGraph {
      * directed, because the exchange rate is direction specific
      * unweighted, because the exchange rates are the edges themselves
      */
-    private DirectedMultigraph<String, Rate> currencyGraph;
+    private SimpleDirectedGraph<String, Rate> currencyGraph;
 
     /**
      * Simple constructor. Initializes nothing.
      */
     public CurrencyConverterGraph() {
-        currencyGraph = new DirectedMultigraph<>(Rate.class);
+        currencyGraph = new SimpleDirectedGraph<>(Rate.class);
     }
 
     /**
