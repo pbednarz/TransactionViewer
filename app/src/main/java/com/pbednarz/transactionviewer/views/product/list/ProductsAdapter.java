@@ -1,4 +1,4 @@
-package com.pbednarz.transactionviewer.views.product;
+package com.pbednarz.transactionviewer.views.product.list;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
