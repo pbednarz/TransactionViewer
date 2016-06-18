@@ -6,6 +6,11 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.pbednarz.transactionviewer.models.Transaction;
+import com.pbednarz.transactionviewer.providers.exchange.CurrencyConverter;
+import com.pbednarz.transactionviewer.providers.exchange.CurrencyFormatter;
+import com.pbednarz.transactionviewer.providers.exchange.ExchangeRateUndefinedException;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -16,17 +21,25 @@ import butterknife.ButterKnife;
 
 public class TransactionViewHolder extends RecyclerView.ViewHolder {
 
-    @BindView(android.R.id.text1)
-    TextView transactionCurrencyAmountTv;
-    @BindView(android.R.id.text2)
-    TextView transactionGBPAmountTv;
+    @BindView(android.R.id.text1) TextView transactionCurrencyAmountTv;
+    @BindView(android.R.id.text2) TextView transactionGBPAmountTv;
+    @Inject CurrencyConverter currencyConverter;
 
-    public TransactionViewHolder(@NonNull View itemView) {
+    public TransactionViewHolder(@NonNull View itemView, CurrencyConverter currencyConverter) {
         super(itemView);
+        this.currencyConverter = currencyConverter;
         ButterKnife.bind(this, itemView);
     }
 
     public void bindTransaction(@NonNull Transaction transaction) {
-        transactionCurrencyAmountTv.setText(transaction.getAmount());
+        String transactionAmount = transaction.getAmount();
+        transactionCurrencyAmountTv.setText(CurrencyFormatter.format(transactionAmount, transaction.getCurrency()));
+        try {
+            String gbpTransactionAmount = currencyConverter.convertCurrency(transactionAmount, transaction.getCurrency()).toPlainString();
+            transactionGBPAmountTv.setText(CurrencyFormatter.format(gbpTransactionAmount, CurrencyFormatter.GBP_CURRENCY));
+        } catch (ExchangeRateUndefinedException e) {
+            transactionGBPAmountTv.setText(e.getLocalizedMessage());
+        }
+
     }
 }

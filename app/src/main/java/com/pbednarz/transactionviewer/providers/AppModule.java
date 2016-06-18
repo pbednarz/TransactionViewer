@@ -1,8 +1,6 @@
 package com.pbednarz.transactionviewer.providers;
 
 import android.app.Application;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -34,11 +32,5 @@ public class AppModule {
         return new GsonBuilder()
                 .serializeNulls()
                 .create();
-    }
-
-    @Provides
-    @Singleton
-    public SharedPreferences provideSharedPreferences() {
-        return PreferenceManager.getDefaultSharedPreferences(app);
     }
 }

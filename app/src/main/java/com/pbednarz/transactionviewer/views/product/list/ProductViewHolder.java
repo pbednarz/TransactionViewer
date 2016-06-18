@@ -21,10 +21,8 @@ import butterknife.ButterKnife;
 public class ProductViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
     private final ProductsAdapter.ProductActionInterface productActionInterface;
-    @BindView(android.R.id.text1)
-    TextView productNameTv;
-    @BindView(android.R.id.text2)
-    TextView productTransactionTv;
+    @BindView(android.R.id.text1) TextView productNameTv;
+    @BindView(android.R.id.text2) TextView productTransactionTv;
     private Product product;
 
     public ProductViewHolder(@NonNull View itemView, @NonNull ProductsAdapter.ProductActionInterface productActionInterface) {

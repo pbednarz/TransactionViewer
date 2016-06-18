@@ -7,17 +7,13 @@ import android.support.annotation.NonNull;
 import com.pbednarz.transactionviewer.providers.AppComponent;
 import com.pbednarz.transactionviewer.providers.AppModule;
 import com.pbednarz.transactionviewer.providers.DaggerAppComponent;
+import com.squareup.leakcanary.LeakCanary;
 
 /**
  * Created by pbednarz on 2016-06-18.
  */
 public class AppController extends Application {
-    private static AppController instance;
     private AppComponent component;
-
-    public static AppController getInstance() {
-        return instance;
-    }
 
     @NonNull
     public static AppComponent getComponent(@NonNull Context context) {
@@ -27,8 +23,8 @@ public class AppController extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        instance = this;
         component = buildGraph();
+        LeakCanary.install(this);
     }
 
     protected AppComponent buildGraph() {

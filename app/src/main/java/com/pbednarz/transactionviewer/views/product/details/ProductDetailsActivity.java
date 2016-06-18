@@ -11,9 +11,20 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
+import android.widget.TextView;
 
+import com.pbednarz.transactionviewer.AppController;
 import com.pbednarz.transactionviewer.R;
 import com.pbednarz.transactionviewer.models.Product;
+import com.pbednarz.transactionviewer.models.Transaction;
+import com.pbednarz.transactionviewer.providers.exchange.CurrencyConverter;
+import com.pbednarz.transactionviewer.providers.exchange.CurrencyFormatter;
+import com.pbednarz.transactionviewer.providers.exchange.ExchangeRateUndefinedException;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -24,9 +35,9 @@ import butterknife.ButterKnife;
 
 public class ProductDetailsActivity extends AppCompatActivity {
     public static final String EXTRA_PRODUCT = "ProductDetailsActivity.EXTRA_PRODUCT";
-    @BindView(R.id.recyclerView)
-    RecyclerView recyclerView;
-    private Product product;
+    @BindView(R.id.recyclerView) RecyclerView recyclerView;
+    @BindView(R.id.total) TextView totalAmountTv;
+    @Inject CurrencyConverter currencyConverter;
 
     public static Intent getStartIntent(@NonNull Context context, @NonNull Product product) {
         Intent intent = new Intent(context, ProductDetailsActivity.class);
@@ -38,18 +49,34 @@ public class ProductDetailsActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_product_detail);
-        ButterKnife.bind(this);
-        product = getIntent().getParcelableExtra(EXTRA_PRODUCT);
+
+        Product product = getIntent().getParcelableExtra(EXTRA_PRODUCT);
         if (product == null) {
             finish();
+            return;
         }
-
+        ButterKnife.bind(this);
+        AppController.getComponent(this).inject(this);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setTitle(product.getSku());
         }
-        ProductsDetailsAdapter detailsAdapter = new ProductsDetailsAdapter(product.getTransactions());
+        ProductsDetailsAdapter detailsAdapter = new ProductsDetailsAdapter(product.getTransactions(), currencyConverter);
         initUI(detailsAdapter);
+        calculateTotalAmount(product.getTransactions());
+    }
+
+    private void calculateTotalAmount(List<Transaction> transactions) {
+        BigDecimal total = new BigDecimal(0);
+        for (Transaction transaction : transactions) {
+            try {
+                total = total.add(currencyConverter.convertCurrency(transaction.getAmount(), transaction.getCurrency()));
+            } catch (ExchangeRateUndefinedException e) {
+                e.printStackTrace();
+            }
+        }
+        String totalStringFormatted = CurrencyFormatter.UK_FORMATTER.format(total);
+        totalAmountTv.setText(getString(R.string.total_sum_formatter, totalStringFormatted));
     }
 
     private void initUI(RecyclerView.Adapter adapter) {

@@ -1,5 +1,6 @@
 package com.pbednarz.transactionviewer.providers;
 
+import com.pbednarz.transactionviewer.views.product.details.ProductDetailsActivity;
 import com.pbednarz.transactionviewer.views.product.list.ProductsActivity;
 
 import javax.inject.Singleton;
@@ -19,4 +20,6 @@ import dagger.Component;
 public interface AppComponent {
 
     void inject(ProductsActivity productsActivity);
+
+    void inject(ProductDetailsActivity productDetailsActivity);
 }

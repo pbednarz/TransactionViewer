@@ -8,6 +8,8 @@ import com.pbednarz.transactionviewer.R;
 import com.pbednarz.transactionviewer.models.Product;
 import com.pbednarz.transactionviewer.models.Rate;
 import com.pbednarz.transactionviewer.models.Transaction;
+import com.pbednarz.transactionviewer.providers.exchange.CurrencyConverter;
+import com.pbednarz.transactionviewer.providers.exchange.GBPCurrencyConverter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -63,5 +65,11 @@ public class DataModule {
     public List<Transaction> provideTransactions(JSONResourceReader jsonReader) {
         return jsonReader.readFromRaw(R.raw.transactions, new TypeToken<ArrayList<Transaction>>() {
         }.getType());
+    }
+
+    @Provides
+    @Singleton
+    public CurrencyConverter provideCurrencyConverter(List<Rate> rates) {
+        return new GBPCurrencyConverter(rates);
     }
 }
