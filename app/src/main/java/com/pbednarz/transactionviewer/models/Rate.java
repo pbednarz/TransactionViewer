@@ -15,7 +15,7 @@ import lombok.Value;
 @Value
 @AllArgsConstructor
 public class Rate implements Parcelable {
-    public static final Parcelable.Creator<Rate> CREATOR = new Parcelable.Creator<Rate>() {
+    public static final Creator<Rate> CREATOR = new Creator<Rate>() {
         @Override
         public Rate createFromParcel(Parcel source) {
             return new Rate(source);
@@ -27,13 +27,17 @@ public class Rate implements Parcelable {
         }
     };
     private final String from;
-    private final String rate;
+    private final BigDecimal rate;
     private final String to;
 
     protected Rate(Parcel in) {
         this.from = in.readString();
-        this.rate = in.readString();
+        this.rate = (BigDecimal) in.readSerializable();
         this.to = in.readString();
+    }
+
+    public Rate invert() {
+        return new Rate(to, BigDecimal.ONE.divide(rate, RoundingMode.HALF_UP), from);
     }
 
     @Override
@@ -44,11 +48,7 @@ public class Rate implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.from);
-        dest.writeString(this.rate);
+        dest.writeSerializable(this.rate);
         dest.writeString(this.to);
-    }
-
-    public Rate invert() {
-        return new Rate(to, BigDecimal.ONE.divide(new BigDecimal(rate), RoundingMode.HALF_UP).toPlainString(), from);
     }
 }

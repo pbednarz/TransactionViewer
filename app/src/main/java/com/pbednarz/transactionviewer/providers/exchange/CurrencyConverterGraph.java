@@ -97,7 +97,7 @@ public class CurrencyConverterGraph {
         // navigate the edges and iteratively compute the exchange rate
         BigDecimal rate = BigDecimal.ONE;
         for (Rate edge : l) {
-            rate = rate.multiply(new BigDecimal(edge.getRate()));
+            rate = rate.multiply(edge.getRate());
         }
 
         // compute and return the currency value

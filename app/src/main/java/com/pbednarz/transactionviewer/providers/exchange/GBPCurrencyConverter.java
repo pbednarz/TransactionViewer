@@ -21,7 +21,7 @@ public class GBPCurrencyConverter implements CurrencyConverter {
         this.currencyConverterGraph = currencyConverterGraph;
         for (Rate rate : rates) {
             if (GBP_CURRENCY.equals(rate.getTo())) {
-                gbpRates.put(rate.getFrom(), new BigDecimal(rate.getRate()));
+                gbpRates.put(rate.getFrom(), rate.getRate());
             }
         }
         for (Rate rate : rates) {
