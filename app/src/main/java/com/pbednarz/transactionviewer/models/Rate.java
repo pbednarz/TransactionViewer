@@ -3,12 +3,17 @@ package com.pbednarz.transactionviewer.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
+import lombok.AllArgsConstructor;
 import lombok.Value;
 
 /**
  * Created by pbednarz on 2016-06-18.
  */
 @Value
+@AllArgsConstructor
 public class Rate implements Parcelable {
     public static final Parcelable.Creator<Rate> CREATOR = new Parcelable.Creator<Rate>() {
         @Override
@@ -41,5 +46,9 @@ public class Rate implements Parcelable {
         dest.writeString(this.from);
         dest.writeString(this.rate);
         dest.writeString(this.to);
+    }
+
+    public Rate invert() {
+        return new Rate(to, BigDecimal.ONE.divide(new BigDecimal(rate), RoundingMode.HALF_UP).toPlainString(), from);
     }
 }

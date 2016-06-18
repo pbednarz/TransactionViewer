@@ -1,17 +1,18 @@
 package com.pbednarz.transactionviewer.providers.exchange;
 
+import com.pbednarz.transactionviewer.models.Rate;
+
 import org.jgrapht.alg.DijkstraShortestPath;
-import org.jgrapht.graph.SimpleDirectedGraph;
+import org.jgrapht.graph.DirectedMultigraph;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.List;
 
 /**
  * This class implements the a currency converter.
  * Because not every exchange rate is directly defined, the basis data structure is an
  * unweighted, directed graph, with strings as vertices and edges holding the exchange rate.
- * SimpleDirectedGraph<String, Double>
+ * SimpleDirectedGraph<String, BigDecimal>
  * Final exchange rates are computed using Dijkstra's shortest path algorithm.
  * <p>
  * a) In realistic cases, paths between currencies should be relatively small (max 2,3 edges),
@@ -28,6 +29,7 @@ import java.util.List;
  * could use java.util.Currency, which implements ISO-4217
  *
  * @author Miguel Vaz
+ * @author pbednarz
  */
 
 public class CurrencyConverterGraph {
@@ -36,26 +38,26 @@ public class CurrencyConverterGraph {
      * directed, because the exchange rate is direction specific
      * unweighted, because the exchange rates are the edges themselves
      */
-    private SimpleDirectedGraph<String, BigDecimal> currencyGraph;
+    private DirectedMultigraph<String, Rate> currencyGraph;
 
     /**
      * Simple constructor. Initializes nothing.
      */
     public CurrencyConverterGraph() {
-        currencyGraph = new SimpleDirectedGraph<String, BigDecimal>(BigDecimal.class);
+        currencyGraph = new DirectedMultigraph<>(Rate.class);
     }
 
     /**
      * Defines (or changes) the exchange rate between the origin and goal currencies.
      * TODO: not thread-safe
      *
-     * @param origin
-     * @param goal
      * @param rate
      * @return
      */
-    public boolean setExchangeRate(String origin, String goal, BigDecimal rate) {
+    public boolean setExchangeRate(Rate rate) {
         // add the vertices (currencies) if they do not exist
+        String origin = rate.getFrom();
+        String goal = rate.getTo();
         currencyGraph.addVertex(origin);
         currencyGraph.addVertex(goal);
 
@@ -68,7 +70,7 @@ public class CurrencyConverterGraph {
         // add the edge
         boolean addDirectCurrency = currencyGraph.addEdge(origin, goal, rate);
         // and the direct inverse edge, with the inverse weight
-        boolean addReverseCurrency = currencyGraph.addEdge(goal, origin, BigDecimal.ONE.divide(rate, RoundingMode.HALF_UP));
+        boolean addReverseCurrency = currencyGraph.addEdge(goal, origin, rate.invert());
 
         return addDirectCurrency && addReverseCurrency;
     }
@@ -85,7 +87,7 @@ public class CurrencyConverterGraph {
      */
     public BigDecimal convertCurrency(String origin, String goal, BigDecimal amount) throws ExchangeRateUndefinedException {
         // find the shortest path between the two currencies
-        List<BigDecimal> l = DijkstraShortestPath.findPathBetween(currencyGraph, origin, goal);
+        List<Rate> l = DijkstraShortestPath.findPathBetween(currencyGraph, origin, goal);
 
         // when there is no path between the 2 nodes / vertices / currencies
         // DijkstraShortestPath returns null
@@ -94,8 +96,8 @@ public class CurrencyConverterGraph {
 
         // navigate the edges and iteratively compute the exchange rate
         BigDecimal rate = BigDecimal.ONE;
-        for (BigDecimal edge : l) {
-            rate = rate.multiply(edge);
+        for (Rate edge : l) {
+            rate = rate.multiply(new BigDecimal(edge.getRate()));
         }
 
         // compute and return the currency value
