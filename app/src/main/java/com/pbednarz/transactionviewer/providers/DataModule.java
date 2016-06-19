@@ -11,7 +11,7 @@ import com.pbednarz.transactionviewer.models.Rate;
 import com.pbednarz.transactionviewer.models.Transaction;
 import com.pbednarz.transactionviewer.providers.exchange.CurrencyConverter;
 import com.pbednarz.transactionviewer.providers.exchange.CurrencyConverterGraph;
-import com.pbednarz.transactionviewer.providers.exchange.GBPCurrencyConverter;
+import com.pbednarz.transactionviewer.providers.exchange.CurrencyConverterImpl;
 import com.pbednarz.transactionviewer.providers.json.JSONResourceReader;
 
 import java.util.ArrayList;
@@ -87,6 +87,6 @@ public class DataModule {
     @Provides
     @Singleton
     public CurrencyConverter provideCurrencyConverter(List<Rate> rates) {
-        return new GBPCurrencyConverter(rates, new CurrencyConverterGraph());
+        return new CurrencyConverterImpl("GBP", rates, new CurrencyConverterGraph());
     }
 }

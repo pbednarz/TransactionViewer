@@ -13,15 +13,16 @@ import java.util.Map;
  * Created by pbednarz on 2016-06-18.
  */
 
-public class GBPCurrencyConverter implements CurrencyConverter {
-    private final String GBP_CURRENCY = "GBP";
+public class CurrencyConverterImpl implements CurrencyConverter {
+    private final String originCurrencyCode;
     private final CurrencyConverterGraph currencyConverterGraph;
     private final Map<String, BigDecimal> ratesCache = new HashMap<>();
 
-    public GBPCurrencyConverter(@NonNull List<Rate> rates, @NonNull CurrencyConverterGraph currencyConverterGraph) {
+    public CurrencyConverterImpl(@NonNull String originCurrencyCode, @NonNull List<Rate> rates, @NonNull CurrencyConverterGraph currencyConverterGraph) {
+        this.originCurrencyCode = originCurrencyCode;
         this.currencyConverterGraph = currencyConverterGraph;
         for (Rate rate : rates) {
-            if (GBP_CURRENCY.equals(rate.getTo())) {
+            if (originCurrencyCode.equals(rate.getTo())) {
                 ratesCache.put(rate.getFrom(), rate.getRate());
             }
         }
@@ -32,20 +33,20 @@ public class GBPCurrencyConverter implements CurrencyConverter {
 
     @Override
     public BigDecimal convertCurrency(@NonNull BigDecimal inValue, @NonNull String currencyFrom) throws ArithmeticException, ExchangeRateUndefinedException {
-        if (GBP_CURRENCY.equals(currencyFrom)) {
+        if (originCurrencyCode.equals(currencyFrom)) {
             return inValue;
         }
 
         BigDecimal rate = getRate(currencyFrom);
-        BigDecimal gbp = inValue.multiply(rate);
-        gbp = gbp.setScale(2, BigDecimal.ROUND_HALF_UP);
-        return gbp;
+        BigDecimal outValue = inValue.multiply(rate);
+        outValue = outValue.setScale(2, BigDecimal.ROUND_HALF_UP);
+        return outValue;
     }
 
     private BigDecimal getRate(@NonNull String currencyFrom) throws ExchangeRateUndefinedException {
         BigDecimal rate = ratesCache.get(currencyFrom);
         if (rate == null) {
-            rate = currencyConverterGraph.getCurrencyRate(currencyFrom, GBP_CURRENCY);
+            rate = currencyConverterGraph.getCurrencyRate(currencyFrom, originCurrencyCode);
             ratesCache.put(currencyFrom, rate);
         }
         return rate;
