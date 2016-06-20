@@ -40,7 +40,7 @@ public class CurrencyConverterImpl implements CurrencyConverter {
      *
      * @param rates List of rates
      */
-    private void initRates(List<Rate> rates) {
+    private void initRates(@NonNull List<Rate> rates) {
         for (Rate rate : rates) {
             setExchangeRateToGraph(rate);
             if (goalCurrencyCode.equals(rate.getTo())) {
@@ -70,6 +70,13 @@ public class CurrencyConverterImpl implements CurrencyConverter {
         return outValue;
     }
 
+    /**
+     * Finds rate between goal and origin currency
+     *
+     * @param currencyFrom Origin currency
+     * @return BigDecimal rate
+     * @throws ExchangeRateUndefinedException
+     */
     private BigDecimal getRate(@NonNull String currencyFrom) throws ExchangeRateUndefinedException {
         BigDecimal rate = ratesCache.get(currencyFrom);
         if (rate == null) {
@@ -85,7 +92,7 @@ public class CurrencyConverterImpl implements CurrencyConverter {
      * @param rate Rate between origin and goal currency
      * @return boolean flag of correctly added rates
      */
-    private boolean setExchangeRateToGraph(Rate rate) {
+    private boolean setExchangeRateToGraph(@NonNull Rate rate) {
         // add the vertices (currencies) if they do not exist
         String origin = rate.getFrom();
         String goal = rate.getTo();
@@ -114,7 +121,7 @@ public class CurrencyConverterImpl implements CurrencyConverter {
      * @return the amount of converted currency
      * @throws ExchangeRateUndefinedException
      */
-    private BigDecimal findCurrencyRateInGraph(String origin, String goal) throws ExchangeRateUndefinedException {
+    private BigDecimal findCurrencyRateInGraph(@NonNull String origin, @NonNull String goal) throws ExchangeRateUndefinedException {
         // find the shortest path between the two currencies
         List<Rate> l = DijkstraShortestPath.findPathBetween(currencyGraph, origin, goal);
 
