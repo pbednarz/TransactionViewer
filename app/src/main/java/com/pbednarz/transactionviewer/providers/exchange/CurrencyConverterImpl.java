@@ -4,36 +4,63 @@ import android.support.annotation.NonNull;
 
 import com.pbednarz.transactionviewer.models.Rate;
 
+import org.jgrapht.alg.DijkstraShortestPath;
+import org.jgrapht.graph.SimpleDirectedGraph;
+
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
- * Created by pbednarz on 2016-06-18.
+ * This class implements the currency converter.
+ * Final exchange rates are computed using Dijkstra's shortest path algorithm.
+ *
+ * @author pbednarz
+ * @see <a href="https://github.com/mvaz/CurrencyConverter">Based on Miguel Vaz CurrencyConverter</a>
  */
 
 public class CurrencyConverterImpl implements CurrencyConverter {
-    private final String originCurrencyCode;
-    private final CurrencyConverterGraph currencyConverterGraph;
-    private final Map<String, BigDecimal> ratesCache = new HashMap<>();
+    private final String goalCurrencyCode;
+    private final SimpleDirectedGraph<String, Rate> currencyGraph;
+    private final Map<String, BigDecimal> ratesCache;
 
-    public CurrencyConverterImpl(@NonNull String originCurrencyCode, @NonNull List<Rate> rates, @NonNull CurrencyConverterGraph currencyConverterGraph) {
-        this.originCurrencyCode = originCurrencyCode;
-        this.currencyConverterGraph = currencyConverterGraph;
+    /**
+     * Simple constructor. Initializes graph and rates cache
+     */
+    public CurrencyConverterImpl(@NonNull String goalCurrencyCode, @NonNull List<Rate> rates) {
+        this.goalCurrencyCode = goalCurrencyCode;
+        this.currencyGraph = new SimpleDirectedGraph<>(Rate.class);
+        this.ratesCache = new HashMap<>();
+        initRates(rates);
+    }
+
+    /**
+     * Initializes graph node and edges, added known rates to cache
+     *
+     * @param rates List of rates
+     */
+    private void initRates(List<Rate> rates) {
         for (Rate rate : rates) {
-            if (originCurrencyCode.equals(rate.getTo())) {
+            setExchangeRateToGraph(rate);
+            if (goalCurrencyCode.equals(rate.getTo())) {
                 ratesCache.put(rate.getFrom(), rate.getRate());
             }
         }
-        for (Rate rate : rates) {
-            currencyConverterGraph.setExchangeRate(rate);
-        }
     }
 
+    /**
+     * Converts a given amount of an origin currency to a goal currency.
+     *
+     * @param inValue      the amount of an origin currency
+     * @param currencyFrom the string identifier of the origin currency
+     * @return the amount of converted currency
+     * @throws ExchangeRateUndefinedException
+     * @throws ArithmeticException
+     */
     @Override
     public BigDecimal convertCurrency(@NonNull BigDecimal inValue, @NonNull String currencyFrom) throws ArithmeticException, ExchangeRateUndefinedException {
-        if (originCurrencyCode.equals(currencyFrom)) {
+        if (goalCurrencyCode.equals(currencyFrom)) {
             return inValue;
         }
 
@@ -46,9 +73,63 @@ public class CurrencyConverterImpl implements CurrencyConverter {
     private BigDecimal getRate(@NonNull String currencyFrom) throws ExchangeRateUndefinedException {
         BigDecimal rate = ratesCache.get(currencyFrom);
         if (rate == null) {
-            rate = currencyConverterGraph.getCurrencyRate(currencyFrom, originCurrencyCode);
+            rate = findCurrencyRateInGraph(currencyFrom, goalCurrencyCode);
             ratesCache.put(currencyFrom, rate);
         }
+        return rate;
+    }
+
+    /**
+     * Defines (or changes) the exchange rate between the origin and goal currencies in Graph.
+     *
+     * @param rate Rate between origin and goal currency
+     * @return boolean flag of correctly added rates
+     */
+    private boolean setExchangeRateToGraph(Rate rate) {
+        // add the vertices (currencies) if they do not exist
+        String origin = rate.getFrom();
+        String goal = rate.getTo();
+        currencyGraph.addVertex(origin);
+        currencyGraph.addVertex(goal);
+
+        // check whether the edge already exists
+        // if so, remove it, in order to add it
+        if (currencyGraph.containsEdge(origin, goal)) {
+            currencyGraph.removeEdge(origin, goal);
+            currencyGraph.removeEdge(goal, origin);
+        }
+        // add the edge
+        boolean addDirectCurrency = currencyGraph.addEdge(origin, goal, rate);
+        // and the direct inverse edge, with the inverse weight
+        boolean addReverseCurrency = currencyGraph.addEdge(goal, origin, rate.invert());
+
+        return addDirectCurrency && addReverseCurrency;
+    }
+
+    /**
+     * Finds rate in graph from an origin currency to a goal currency.
+     *
+     * @param origin the string identifier of the currency to be exchanged
+     * @param goal   the string identifier of the target currency
+     * @return the amount of converted currency
+     * @throws ExchangeRateUndefinedException
+     */
+    private BigDecimal findCurrencyRateInGraph(String origin, String goal) throws ExchangeRateUndefinedException {
+        // find the shortest path between the two currencies
+        List<Rate> l = DijkstraShortestPath.findPathBetween(currencyGraph, origin, goal);
+
+        // when there is no path between the 2 nodes / vertices / currencies
+        // DijkstraShortestPath returns null
+        if (l == null)
+            throw new ExchangeRateUndefinedException();
+
+        // navigate the edges and iteratively compute the exchange rate
+        BigDecimal rate = BigDecimal.ONE;
+        for (Rate edge : l) {
+            rate = rate.multiply(edge.getRate());
+        }
+
+        // compute and return the currency value
         return rate;
     }
 }

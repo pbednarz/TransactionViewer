@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.pbednarz.transactionviewer.models.Rate;
 import com.pbednarz.transactionviewer.providers.exchange.CurrencyConverter;
-import com.pbednarz.transactionviewer.providers.exchange.CurrencyConverterGraph;
 import com.pbednarz.transactionviewer.providers.exchange.CurrencyConverterImpl;
 import com.pbednarz.transactionviewer.providers.exchange.ExchangeRateUndefinedException;
 
@@ -34,7 +33,7 @@ public class CurrencyExchangeTest {
     public void gbpCurrencyConverterTest() {
         List<Rate> rates = new Gson().fromJson(RATES_JSON, new TypeToken<ArrayList<Rate>>() {
         }.getType());
-        CurrencyConverter ccv = new CurrencyConverterImpl(GBP, rates, new CurrencyConverterGraph());
+        CurrencyConverter ccv = new CurrencyConverterImpl(GBP, rates);
 
         BigDecimal amount = new BigDecimal(25.0);
         BigDecimal rate = new BigDecimal(0.5);
@@ -53,7 +52,7 @@ public class CurrencyExchangeTest {
         List<Rate> rates = new ArrayList<>(2);
         rates.add(usdToGbpRate);
         rates.add(eurToGbpRate);
-        CurrencyConverter ccv = new CurrencyConverterImpl(USD, rates, new CurrencyConverterGraph());
+        CurrencyConverter ccv = new CurrencyConverterImpl(USD, rates);
 
         BigDecimal amount = BigDecimal.ONE;
         BigDecimal eurToUsdRate = new BigDecimal(5.0);
@@ -69,7 +68,7 @@ public class CurrencyExchangeTest {
     public void undefinedCurrencyTest() {
         List<Rate> rates = new Gson().fromJson(RATES_JSON, new TypeToken<ArrayList<Rate>>() {
         }.getType());
-        CurrencyConverter ccv = new CurrencyConverterImpl(GBP, rates, new CurrencyConverterGraph());
+        CurrencyConverter ccv = new CurrencyConverterImpl(GBP, rates);
         try {
             ccv.convertCurrency(BigDecimal.ONE, PLN);
         } catch (Exception e) {
@@ -81,7 +80,7 @@ public class CurrencyExchangeTest {
     public void differentPathTest() {
         List<Rate> rates = new Gson().fromJson(RATES_JSON, new TypeToken<ArrayList<Rate>>() {
         }.getType());
-        CurrencyConverter ccv = new CurrencyConverterImpl(GBP, rates, new CurrencyConverterGraph());
+        CurrencyConverter ccv = new CurrencyConverterImpl(GBP, rates);
 
         BigDecimal amount = new BigDecimal(25.0);
         BigDecimal rate = BigDecimal.ONE;
@@ -96,7 +95,7 @@ public class CurrencyExchangeTest {
     @Test
     public void convertToSameCurrencyTest() {
         Rate rate = new Rate(USD, BigDecimal.TEN, GBP);
-        CurrencyConverter ccv = new CurrencyConverterImpl(GBP, Collections.singletonList(rate), new CurrencyConverterGraph());
+        CurrencyConverter ccv = new CurrencyConverterImpl(GBP, Collections.singletonList(rate));
         BigDecimal amount = new BigDecimal(25.0);
         try {
             BigDecimal zbr = ccv.convertCurrency(amount, GBP);
